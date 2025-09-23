@@ -1,5 +1,7 @@
 # learn-cicd-starter (Notely)
 
+![Testing Badge](https://github.com/tjtreem/learn-cicd-starter/actions/workflows/ci.yml/badge.svg)
+
 This repo contains the starter code for the "Notely" application for the "Learn CICD" course on [Boot.dev](https://boot.dev).
 
 ## Local Development
@@ -24,3 +26,6 @@ You do *not* need to set up a database or any interactivity on the webpage yet. 
 
 
 Tim Treem's version of Boot.Dev's Notely app.
+
+
+
