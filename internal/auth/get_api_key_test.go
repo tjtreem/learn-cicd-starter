@@ -20,7 +20,7 @@ func TestGetAPIKey(t *testing.T) {
     cases := []testCase{
 	{name: "no header", setHeader: false, wantErr: ErrNoAuthHeaderIncluded},
 	{name: "empty header", setHeader: true, headerVal: "", wantErr: ErrNoAuthHeaderIncluded},
-	{name: "valid", setHeader: false, headerVal: "ApiKey my-secret", wantKey: "my-secret", wantErr: nil},
+	{name: "valid", setHeader: true, headerVal: "ApiKey my-secret", wantKey: "my-secret", wantErr: nil},
 	{name: "wrong prefix", setHeader: true, headerVal: "Bearer token", wantErr: errors.New("any")},
 	{name: "missing key", setHeader: true, headerVal: "ApiKey", wantErr: errors.New("any")},
     }
