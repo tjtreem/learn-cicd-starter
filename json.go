@@ -33,7 +33,7 @@ func respondWithJSON(w http.ResponseWriter, code int, payload interface{}) {
 	
 	n, err := w.Write(dat)
 	if err != nil {
-	    log.Prinf("respondWithJSON: write error after %d bytes: %v", n, err)
+		log.Printf("respondWithJSON: write error after %d bytes: %v", n, err)
 	    return
 	}
 }
