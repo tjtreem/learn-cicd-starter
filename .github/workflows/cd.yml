@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checck out code
+      - name: Check out code
         uses: actions/checkout@v4
 
       - name: Set up Go
@@ -18,7 +18,10 @@ jobs:
         with:
           go-version: "stable"
 
+      - name: Make build script executable
+        run: chmod +x scripts/buildprod.sh
+
       - name: Build notely app
-        run: scripts/buildprod.sh
+        run: ./scripts/buildprod.sh
 
 
