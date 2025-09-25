@@ -19,6 +19,6 @@ jobs:
           go-version: "stable"
 
       - name: Build notely app
-        run: ./scripts/buildprod.sh
+        run: scripts/buildprod.sh
 
 
