@@ -43,6 +43,10 @@ jobs:
           gcloud builds submit \
             --tag us-central1-docker.pkg.dev/notely-473217/notely-ar-repo/notely:${IMAGE_TAG} .
 
+      - name: Debug DB URL presence
+        run: |
+          [ -n "$DATABASE_URL" ] && echo "DATABASE_URL is set" || echo "DATABASE_URL is MISSING"
+
       - name: Run DB migrations
         run: |
           export PATH="$PWD/bin:$PATH"
