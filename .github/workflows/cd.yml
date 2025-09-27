@@ -9,20 +9,16 @@ jobs:
     name: Deploy
     runs-on: ubuntu-latest
 
+    env:
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
+
     steps:
       - name: Check out code
         uses: actions/checkout@v4
 
-      - name: Set up Go
-        uses: actions/setup-go@v5
-        with:
-          go-version: "stable"
-
-      - name: Make build script executable
-        run: chmod +x scripts/buildprod.sh
-
-      - name: Build notely app
-        run: ./scripts/buildprod.sh
+      - name: Install goose
+        run: |
+          curl -fsSL https://raw.githubusercontent.com/pressly/goose/master/install.sh | sh
 
       - id: 'auth'
         uses: 'google-github-actions/auth@v2'
@@ -32,16 +28,41 @@ jobs:
       - name: 'Set up Cloud SDK'
         uses: 'google-github-actions/setup-gcloud@v3'
 
-      - name: 'Use gcloud CLI'
-        run: 'gcloud info'
+      - name: Configure gcloud defaults
+        run: |
+          gcloud config set project notely-473217
+          gcloud config set run/region us-central1
 
       - name: Set IMAGE_TAG
         run: |
           SHORT_SHA="$(echo ${{github.sha}} | head -c 8)"
           echo "IMAGE_TAG=$SHORT_SHA" >> "$GITHUB_ENV"
 
-      - name: Build Docker image and push to Artifact Registry
+      - name: Build and push image (Cloud Build)
         run: |
-          gcloud builds submit --tag us-central1-docker.pkg.dev/notely-473217/notely-ar-repo/notely:$IMAGE_TAG .
+          gcloud builds submit \
+            --tag us-central1-docker.pkg.dev/notely-473217/notely-ar-repo/notely:${IMAGE_TAG} .
+
+      - name: Run DB migrations
+        run: |
+          export PATH="$PWD/bin:$PATH"
+          chmod +x scripts/migrateup.sh
+          ./scripts/migrateup.sh
+
+      - name: Deploy to Cloud Run
+        run: |
+          gcloud run deploy notely \
+            --image us-central1-docker.pkg.dev/notely-473217/notely-ar-repo/notely:${IMAGE_TAG} \
+            --allow-unauthenticated \
+            --max-instances=4
+      
+      # Optional: ensure unauthenticated access if first deploy
+      - name: Ensure public invoker (optional)
+        continue-on-error: true
+        run: |
+          gcloud run services add-iam-policy-binding notely \
+            --member="allUsers" \
+            --role="roles/run.invoker"
+
 
 
